@@ -1,1 +1,3 @@
-console.log('Hello GrapQL!');
+import { message } from "./module";
+
+console.log(message);
