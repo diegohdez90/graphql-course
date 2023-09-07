@@ -20,25 +20,26 @@ const dummyResolvers = {
   }
 };
 
-const queryProduct = `
+const typeDefs = `
   type Query {
-    id: ID
-    title: String!
-    price: Float!
-    releaseYear: Int
-    rating: Float
-    inStock: Boolean!
+    me: User
+  }
+
+  type User {
+    id: ID!
+    name: String!
+    email: String!
+    age: Int
   }
 `;
 
-const resolversProduct = {
+const resolvers = {
   Query: {
-    id: () => '1234567890',
-    title: () => 'Apple',
-    price: () => 1.99,
-    releaseYear: () => 1981,
-    rating: () => 4.9,
-    inStock: () => true
+    me: () => ({
+      id: '1234567890',
+      name: 'Diego',
+      email: 'diegohdez12@gmail.com'
+    })
   }
 }
 
@@ -46,8 +47,8 @@ const resolversProduct = {
 createServer(
   createYoga({
     schema: createSchema({
-      typeDefs: queryProduct,
-      resolvers: resolversProduct
+      typeDefs: typeDefs,
+      resolvers: resolvers
     })
   })
 ).listen(4000, () => {
