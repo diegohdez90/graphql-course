@@ -1,5 +1,7 @@
 import { createServer } from 'http';
 import { createYoga, createSchema } from 'graphql-yoga';
+import { users, posts } from './helpers/mockData';
+
 
 const dummyQuery = `
   type Query {
@@ -28,6 +30,8 @@ const typeDefs = `
     sumNumbers(numbers: [Int!]!): Int!
     me: User
     post: Post!
+    users(query: String): [User]!
+    posts(query: String): [Post]!
   }
 
   type User {
@@ -78,6 +82,18 @@ const resolvers = {
       return args.numbers.reduce((prev, curr) => {
         return prev + curr
       }, 0) || 0
+    },
+    users: function (parent, args, ctx, info) {
+      if (!args.query) {
+        return [...users];
+      }
+      return users.filter(user => user.name.toLowerCase().includes(args.query.toLowerCase()))
+    },
+    posts: function (parent, args, ctx, info) {
+      if (!args.query) {
+        return [...posts];
+      }
+      return posts.filter(post => post.title.toLowerCase().includes(args.query.toLowerCase()) || post.body.toLowerCase().includes(args.query.toLowerCase()))
     }
   }
 }
