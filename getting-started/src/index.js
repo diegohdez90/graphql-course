@@ -23,6 +23,7 @@ const dummyResolvers = {
 const typeDefs = `
   type Query {
     me: User
+    post: Post!
   }
 
   type User {
@@ -30,6 +31,13 @@ const typeDefs = `
     name: String!
     email: String!
     age: Int
+  }
+
+  type Post {
+    id: ID!
+    title: String!
+    body: String!
+    published: Boolean!
   }
 `;
 
@@ -39,6 +47,12 @@ const resolvers = {
       id: '1234567890',
       name: 'Diego',
       email: 'diegohdez12@gmail.com'
+    }),
+    post: () => ({
+      id: '1234567890',
+      title: 'GraphQL Bootcamp',
+      body: 'This is introduction in what is GraphQL',
+      published: false
     })
   }
 }
