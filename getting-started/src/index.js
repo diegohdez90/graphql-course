@@ -24,6 +24,8 @@ const typeDefs = `
   type Query {
     greeting(name: String): String!
     add(a: Float, b: Float): Float!
+    grades: [Int]!
+    sumNumbers(numbers: [Int!]!): Int!
     me: User
     post: Post!
   }
@@ -70,6 +72,12 @@ const resolvers = {
         b = parseFloat(args.b)
       }
       return a + b
+    },
+    grades: () => [9, 8, 10, 8, 9, 10, 10, 9],
+    sumNumbers: function (parent, args, ctx, info) {
+      return args.numbers.reduce((prev, curr) => {
+        return prev + curr
+      }, 0) || 0
     }
   }
 }
