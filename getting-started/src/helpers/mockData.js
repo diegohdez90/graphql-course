@@ -16,18 +16,20 @@ const posts = [{
   id: 1,
   title: 'Getting Stated with GraphQL',
   body: 'This is a sample tutorial in how to develop application with...',
-  published: true
+  published: true,
+  author: 1
 }, {
   id: 2,
   title: 'React Hooks',
   body: 'The new feature in coding React application and develop functional components in JS and Typescript...',
-  published: false
+  published: false,
+  author: 2
 }, {
   id: 3,
   title: 'Getting Stated with NodeJS',
   body: 'Runtime environment to develop JS applications...',
-  published: true
-
+  published: true,
+  author: 3
 }]
 
 
