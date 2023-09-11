@@ -22,6 +22,8 @@ const dummyResolvers = {
 
 const typeDefs = `
   type Query {
+    greeting(name: String): String!
+    add(a: Float, b: Float): Float!
     me: User
     post: Post!
   }
@@ -53,7 +55,22 @@ const resolvers = {
       title: 'GraphQL Bootcamp',
       body: 'This is introduction in what is GraphQL',
       published: false
-    })
+    }),
+    greeting: function (parent, args, ctx, info) {
+      if ('name' in args) return `Hi ${args.name}!`
+      return 'Hello!';
+    },
+    add: function (parent, args, ctx, info) {
+      var a = 1.0;
+      var b = a;
+      if (args.a) {
+        a = parseFloat(args.a);
+      }
+      if(args.b) {
+        b = parseFloat(args.b)
+      }
+      return a + b
+    }
   }
 }
 
