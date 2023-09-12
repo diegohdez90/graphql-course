@@ -1,6 +1,6 @@
 import { createServer } from 'http';
 import { createYoga, createSchema } from 'graphql-yoga';
-import { users, posts } from './helpers/mockData';
+import { users, posts, comments } from './helpers/mockData';
 
 
 const dummyQuery = `
@@ -32,6 +32,7 @@ const typeDefs = `
     post: Post!
     users(query: String): [User]!
     posts(query: String): [Post]!
+    comments: [Comment]!
   }
 
   type User {
@@ -48,6 +49,13 @@ const typeDefs = `
     body: String!
     published: Boolean!
     author: User!
+    comments: [Comment]!
+  }
+
+  type Comment {
+    id: ID!
+    body: String!
+    user: User
   }
 `;
 
@@ -96,17 +104,29 @@ const resolvers = {
         return [...posts];
       }
       return posts.filter(post => post.title.toLowerCase().includes(args.query.toLowerCase()) || post.body.toLowerCase().includes(args.query.toLowerCase()))
+    },
+    comments: function() {
+      return [...comments];
     }
   },
   Post: {
     author(parent, args, ctx, info) {
       const authorId = parent.author;
       return users.find(user => user.id === authorId);
+    },
+    comments(parent, args, ctx, info) {
+      const commentsIds = parent.comments
+      return commentsIds.map(id => comments.find(comment => comment.id === id));
     }
   },
   User: {
     posts(parent, args, ctx, info) {
       return posts.filter(post => post.author === parent.id)
+    }
+  },
+  Comment: {
+    user(parent, args, ctx, info) {
+      return users.find(user => user.id === parent.user)
     }
   }
 }
