@@ -57,6 +57,7 @@ const typeDefs = `
     id: ID!
     body: String!
     user: User
+    post: Post!
   }
 `;
 
@@ -131,6 +132,15 @@ const resolvers = {
   Comment: {
     user(parent, args, ctx, info) {
       return users.find(user => user.id === parent.user)
+    },
+    post(parent, args, ctx, info) {
+      for (let index = 0; index < posts.length; index++) {
+        const comment = posts[index].comments.find(innerComment =>
+          innerComment === parent.id
+        )
+        if (comment)
+          return posts[index];
+      }
     }
   }
 }
