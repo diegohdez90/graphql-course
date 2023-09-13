@@ -1,5 +1,6 @@
 import { createServer } from 'http';
 import { createYoga, createSchema } from 'graphql-yoga';
+import { v4 as uuid } from 'uuid'
 import { users, posts, comments } from './helpers/mockData';
 
 
@@ -33,6 +34,10 @@ const typeDefs = `
     users(query: String): [User]!
     posts(query: String): [Post]!
     comments: [Comment]!
+  }
+
+  type Mutation {
+    createUser(name: String!, email: String!, age: Int): User!
   }
 
   type User {
@@ -109,6 +114,22 @@ const resolvers = {
     },
     comments: function() {
       return [...comments];
+    }
+  },
+  Mutation: {
+    createUser(parent, args, ctx, info) {
+      const existedEmail = users.some(user => user.email === args.email);
+      if (existedEmail) {
+        throw new Error('Email already existed')
+      }
+      const body = new Object(args);
+      const id = uuid()
+      const input = {
+        id: id,
+        ...body
+      }
+      users.push(input)
+      return input;
     }
   },
   Post: {
