@@ -37,9 +37,28 @@ const typeDefs = `
   }
 
   type Mutation {
-    createUser(name: String!, email: String!, age: Int): User!
-    createPost(title: String!, body: String!, published: Boolean!, author: ID!): Post!
-    createComment(body: String!, post: ID!, user: ID!): Comment!
+    createUser(input: CreateUserInput): User!
+    createPost(input: CreatePostInput): Post!
+    createComment(input: CreateCommentInput): Comment!
+  }
+
+  input CreateUserInput {
+    name: String!
+    email: String!
+    age: Int
+  }
+
+  input CreatePostInput {
+    title: String!
+    body: String!
+    published: Boolean!
+    author: ID!
+  }
+
+  input CreateCommentInput {
+    body: String!
+    post: ID!
+    user: ID!
   }
 
   type User {
@@ -121,10 +140,10 @@ const resolvers = {
   Mutation: {
     createUser(parent, args, ctx, info) {
       const existedEmail = users.some(user => user.email === args.email);
-      if (existedEmail) {
+      if (existedEmail) {d
         throw new Error('Email already existed')
       }
-      const body = new Object(args);
+      const body = new Object(args.input);
       const id = uuid()
       const input = {
         id: id,
@@ -134,13 +153,13 @@ const resolvers = {
       return input;
     },
     createPost(parent, args, ctx, info) {
-      const userExisted = users.find(user => user.id === args.author)
+      const userExisted = users.find(user => user.id === args.input.author)
       if(!userExisted) {
         throw new Error('User does not exists');
       }
       const id = uuid();
       const post = {
-        ...args,
+        ...args.input,
         id: id,
         comments: [],
       }
@@ -148,14 +167,9 @@ const resolvers = {
       return post;
     },
     createComment(parent, args, ctx, info) {
-      console.log(posts);
-      console.log(users);
-      const postExisted = posts.find(post => post.id === args.post);
+      const postExisted = posts.find(post => post.id === args.input.post);
       
-      const userExisted = users.find(user => user.id === args.user);
-
-      console.log(args, postExisted, userExisted)
-
+      const userExisted = users.find(user => user.id === args.input.user);
       if (!postExisted || !userExisted) {
         throw new Error("User or Post info cannot be retrieved, please review your input data");
       }
@@ -163,12 +177,9 @@ const resolvers = {
       const id = uuid()
       const comment = {
         id,
-        body: args.body,
-        user: userExisted.id,
-        post: postExisted.id
+        ...args.input
       };
 
-      console.log('comment', comment);
       postExisted.comments = [...postExisted.comments, comment.id];
       comments.push(comment);
 
