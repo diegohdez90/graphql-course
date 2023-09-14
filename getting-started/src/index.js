@@ -39,6 +39,7 @@ const typeDefs = `
   type Mutation {
     createUser(name: String!, email: String!, age: Int): User!
     createPost(title: String!, body: String!, published: Boolean!, author: ID!): Post!
+    createComment(body: String!, post: ID!, user: ID!): Comment!
   }
 
   type User {
@@ -140,10 +141,38 @@ const resolvers = {
       const id = uuid();
       const post = {
         ...args,
-        id: id
+        id: id,
+        comments: [],
       }
       posts.push(post);
       return post;
+    },
+    createComment(parent, args, ctx, info) {
+      console.log(posts);
+      console.log(users);
+      const postExisted = posts.find(post => post.id === args.post);
+      
+      const userExisted = users.find(user => user.id === args.user);
+
+      console.log(args, postExisted, userExisted)
+
+      if (!postExisted || !userExisted) {
+        throw new Error("User or Post info cannot be retrieved, please review your input data");
+      }
+
+      const id = uuid()
+      const comment = {
+        id,
+        body: args.body,
+        user: userExisted.id,
+        post: postExisted.id
+      };
+
+      console.log('comment', comment);
+      postExisted.comments = [...postExisted.comments, comment.id];
+      comments.push(comment);
+
+      return comment;
     }
   },
   Post: {
