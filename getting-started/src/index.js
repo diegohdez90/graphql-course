@@ -1,120 +1,10 @@
 import { createServer } from 'http';
 import { createYoga, createSchema } from 'graphql-yoga';
+import * as fs from 'fs';
+import * as path from 'path';
+import { fileURLToPath } from 'url';
 import { v4 as uuid } from 'uuid'
-
-var users = [{
-  id: '1',
-  name: 'Diego',
-  email: 'diegohdez12@gmail.com'
-}, {
-  id: '2',
-  name: 'John',
-  email: 'johndoe@gmail.com'
-}, {
-  id: '3',
-  name: 'Juan',
-  email: 'juanperez@gmail.com'
-}, {
-  id: '4',
-  name: 'Richard',
-  email: 'richard@gmail.com'
-}, {
-  id: '5',
-  name: 'Edward',
-  email: 'edward@gmail.com'
-}, {
-  id: '6',
-  name: 'Marian',
-  email: 'marian@gmail.com'
-}, {
-  id: '7',
-  name: 'Jessica',
-  email: 'jessica@gmail.com'
-}, {
-  id: '8',
-  name: 'Mario',
-  email: 'mario@gmail.com'
-}];
-
-var posts = [{
-  id: '1',
-  title: 'Getting Stated with GraphQL',
-  body: 'This is a sample tutorial in how to develop application with...',
-  published: true,
-  author: '1',
-  comments: ['1', '3', '8', '9']
-}, {
-  id: '2',
-  title: 'React Hooks',
-  body: 'The new feature in coding React application and develop functional components in JS and Typescript...',
-  published: false,
-  author: '2',
-  comments: ['2', '6']
-}, {
-  id: '3',
-  title: 'Getting Stated with NodeJS',
-  body: 'Runtime environment to develop JS applications...',
-  published: true,
-  author: '3',
-  comments: ['4', '5', '7']
-}, {
-  id: '4',
-  title: 'Python',
-  body: 'Learn this OOP language...',
-  published: true,
-  author: '3',
-  comments: ['10', '11', '12']
-}]
-
-var comments = [{
-  id: '1',
-  body: 'Now, I understand how GraphQL works',
-  user: '4'
-}, {
-  id: '2',
-  body: 'Good upgrade in React. This will be easy to code',
-  user: '5'
-}, {
-  id: '3',
-  body: 'Easy for dummy, thanks.',
-  user: '6'
-}, {
-  id: '4',
-  body: 'I love the introduction. A very useful manual for developers',
-  user: '7'
-}, {
-  id: '5',
-  body: 'Detailed explanation to understand',
-  user: '8'
-}, {
-  id: '6',
-  body: 'Easy to understand and code. Thanks for sharing',
-  user: '6'
-}, {
-  id: '7',
-  body: 'The samples explained line per line. I will study for my nex exam',
-  user: '4'
-}, {
-  id: '8',
-  body: 'This is a good tutorial. I\'d like this was published 3 years ago',
-  user: '5'
-}, {
-  id: '9',
-  body: 'I will share this with my colleagues',
-  user: '7'
-}, {
-  id: '10',
-  body: 'Interested',
-  user: '1'
-}, {
-  id: '11',
-  body: 'I undestood from the beginning',
-  user: '2'
-}, {
-  id: '12',
-  body: 'Excellent tutorial',
-  user: '3'
-}]
+import db from './helpers/mockData.js';
 
 
 const dummyQuery = `
@@ -135,73 +25,6 @@ const dummyResolvers = {
       with experience in JavaScript.`
   }
 };
-
-const typeDefs = `
-  type Query {
-    greeting(name: String): String!
-    add(a: Float, b: Float): Float!
-    grades: [Int]!
-    sumNumbers(numbers: [Int!]!): Int!
-    me: User
-    post: Post!
-    users(query: String): [User]!
-    posts(query: String): [Post]!
-    comments: [Comment]!
-  }
-
-  type Mutation {
-    createUser(input: CreateUserInput): User!
-    createPost(input: CreatePostInput): Post!
-    createComment(input: CreateCommentInput): Comment!
-    deleteUser(id: ID!): User!
-    deletePost(id: ID!): Post!
-    deleteComment(id: ID!): Comment!
-  }
-
-  input CreateUserInput {
-    name: String!
-    email: String!
-    age: Int
-  }
-
-  input CreatePostInput {
-    title: String!
-    body: String!
-    published: Boolean!
-    author: ID!
-  }
-
-  input CreateCommentInput {
-    body: String!
-    post: ID!
-    user: ID!
-  }
-
-  type User {
-    id: ID!
-    name: String!
-    email: String!
-    age: Int
-    posts: [Post!]!
-    comments: [Comment]!
-  }
-
-  type Post {
-    id: ID!
-    title: String!
-    body: String!
-    published: Boolean!
-    author: User!
-    comments: [Comment]!
-  }
-
-  type Comment {
-    id: ID!
-    body: String!
-    user: User
-    post: Post!
-  }
-`;
 
 const resolvers = {
   Query: {
@@ -237,25 +60,25 @@ const resolvers = {
         return prev + curr
       }, 0) || 0
     },
-    users: function (parent, args, ctx, info) {
+    users: function (parent, args, { db }, info) {
       if (!args.query) {
-        return [...users];
+        return [...db.users];
       }
-      return users.filter(user => user.name.toLowerCase().includes(args.query.toLowerCase()))
+      return db.users.filter(user => user.name.toLowerCase().includes(args.query.toLowerCase()))
     },
-    posts: function (parent, args, ctx, info) {
+    posts: function (parent, args, { db }, info) {
       if (!args.query) {
-        return [...posts];
+        return [...db.posts];
       }
-      return posts.filter(post => post.title.toLowerCase().includes(args.query.toLowerCase()) || post.body.toLowerCase().includes(args.query.toLowerCase()))
+      return db.posts.filter(post => post.title.toLowerCase().includes(args.query.toLowerCase()) || post.body.toLowerCase().includes(args.query.toLowerCase()))
     },
-    comments: function() {
-      return [...comments];
+    comments: function(parent, args, { db }, info) {
+      return [...db.comments];
     }
   },
   Mutation: {
-    createUser(parent, args, ctx, info) {
-      const existedEmail = users.some(user => user.email === args.email);
+    createUser(parent, args, { db }, info) {
+      const existedEmail = db.users.some(user => user.email === args.email);
       if (existedEmail) {d
         throw new Error('Email already existed')
       }
@@ -265,11 +88,11 @@ const resolvers = {
         id: id,
         ...body
       }
-      users.push(input)
+      db.users.push(input)
       return input;
     },
-    createPost(parent, args, ctx, info) {
-      const userExisted = users.find(user => user.id === args.input.author)
+    createPost(parent, args, { db }, info) {
+      const userExisted = db.users.find(user => user.id === args.input.author)
       if(!userExisted) {
         throw new Error('User does not exists');
       }
@@ -279,13 +102,13 @@ const resolvers = {
         id: id,
         comments: [],
       }
-      posts.push(post);
+      db.posts.push(post);
       return post;
     },
-    createComment(parent, args, ctx, info) {
-      const postExisted = posts.find(post => post.id === args.input.post);
+    createComment(parent, args, { db }, info) {
+      const postExisted = db.posts.find(post => post.id === args.input.post);
       
-      const userExisted = users.find(user => user.id === args.input.user);
+      const userExisted = db.users.find(user => user.id === args.input.user);
       if (!postExisted || !userExisted) {
         throw new Error("User or Post info cannot be retrieved, please review your input data");
       }
@@ -297,52 +120,52 @@ const resolvers = {
       };
 
       postExisted.comments = [...postExisted.comments, comment.id];
-      comments.push(comment);
+      db.comments.push(comment);
 
       return comment;
     },
-    deleteUser(parent, args, ctx, info) {
+    deleteUser(parent, args, { db }, info) {
       const { id } = args
-      const index = users.findIndex(user => user.id === id);
+      const index = db.users.findIndex(user => user.id === id);
 
       if (index === -1) {
         throw new Error("User not found");
       }
 
-      const [userDeleted] = users.splice(index, 1);
+      const [userDeleted] = db.users.splice(index, 1);
       // posts = posts.map(post => {
       //   post = post.comments.filter(comment => comment !== id)
       //   return post;
       // });
-      posts = posts.filter(post => {
+      db.posts = db.posts.filter(post => {
         const matched = post.author === id
         if (matched) {
-          comments.filter(comment => comment.post !== post.id)
+          db.comments.filter(comment => comment.post !== post.id)
         }
         return !matched
       });
-      comments = comments.filter(comment => comment.user !== id);
+      db.comments = db.comments.filter(comment => comment.user !== id);
 
       return userDeleted;
     },
-    deletePost(parent, args, ctx, info) {
+    deletePost(parent, args, { db }, info) {
       const { id } = args;
-      const indexPost = posts.findIndex(post => post.id === id);
+      const indexPost = db.posts.findIndex(post => post.id === id);
       if (indexPost === -1) {
         throw new Error('Post not found')
       }
 
-      const [postDeleted] = posts.splice(indexPost, 1);
+      const [postDeleted] = db.posts.splice(indexPost, 1);
 
-      comments = comments.filter(comment => !postDeleted.comments.includes(comment.id));
+      db.comments = db.comments.filter(comment => !postDeleted.comments.includes(comment.id));
       //  comments = comments.filter(comment => comment.post !== id)
 
       return postDeleted;
     },
-    deleteComment(parent, args, ctx, info) {
+    deleteComment(parent, args, { db }, info) {
       const { id } = args;
 
-      const index = comments.findIndex(comment => 
+      const index = db.comments.findIndex(comment => 
         comment.id === id
       );
 
@@ -350,14 +173,14 @@ const resolvers = {
         throw new Error('Comment not found')
       }
 
-      const [commentDeleted] = comments.splice(index, 1);
+      const [commentDeleted] = db.comments.splice(index, 1);
 
-      for (let indexPost = 0; indexPost < posts.length; indexPost++) {
-        const innerComments = posts[indexPost].comments;
+      for (let indexPost = 0; indexPost < db.posts.length; indexPost++) {
+        const innerComments = db.posts[indexPost].comments;
         const cIndex = innerComments.findIndex(ic => ic === id);
         if (cIndex !== -1) {
           innerComments.splice(cIndex, 1);
-          posts[indexPost].comments = innerComments;
+          db.posts[indexPost].comments = innerComments;
         }
       }
 
@@ -365,34 +188,34 @@ const resolvers = {
     }
   },
   Post: {
-    author(parent, args, ctx, info) {
+    author(parent, args, { db }, info) {
       const authorId = parent.author;
-      return users.find(user => user.id === authorId);
+      return db.users.find(user => user.id === authorId);
     },
-    comments(parent, args, ctx, info) {
+    comments(parent, args, { db }, info) {
       const commentsIds = parent.comments
-      return commentsIds.map(id => comments.find(comment => comment.id === id));
+      return commentsIds.map(id => db.comments.find(comment => comment.id === id));
     }
   },
   User: {
-    posts(parent, args, ctx, info) {
-      return posts.filter(post => post.author === parent.id)
+    posts(parent, args, { db }, info) {
+      return db.posts.filter(post => post.author === parent.id)
     },
-    comments(parent, args, ctx, info) {
-      return comments.filter(comment => comment.user === parent.id)
+    comments(parent, args, { db }, info) {
+      return db.comments.filter(comment => comment.user === parent.id)
     }
   },
   Comment: {
-    user(parent, args, ctx, info) {
-      return users.find(user => user.id === parent.user)
+    user(parent, args, { db }, info) {
+      return db.users.find(user => user.id === parent.user)
     },
-    post(parent, args, ctx, info) {
-      for (let index = 0; index < posts.length; index++) {
-        const comment = posts[index].comments.find(innerComment =>
+    post(parent, args, { db }, info) {
+      for (let index = 0; index < db.posts.length; index++) {
+        const comment = db.posts[index].comments.find(innerComment =>
           innerComment === parent.id
         )
         if (comment)
-          return posts[index];
+          return db.posts[index];
       }
     }
   }
@@ -402,8 +225,14 @@ const resolvers = {
 createServer(
   createYoga({
     schema: createSchema({
-      typeDefs: typeDefs,
-      resolvers: resolvers
+      typeDefs: fs.readFileSync(
+        path.join(path.dirname(fileURLToPath(import.meta.url)), 'schema.graphql'),
+        'utf-8'
+      ),
+      resolvers: resolvers,
+      context: {
+        db
+      }
     })
   })
 ).listen(4000, () => {

@@ -1,4 +1,4 @@
-var users = [{
+const users = [{
   id: '1',
   name: 'Diego',
   email: 'diegohdez12@gmail.com'
@@ -32,7 +32,7 @@ var users = [{
   email: 'mario@gmail.com'
 }];
 
-var posts = [{
+const posts = [{
   id: '1',
   title: 'Getting Stated with GraphQL',
   body: 'This is a sample tutorial in how to develop application with...',
@@ -62,7 +62,7 @@ var posts = [{
   comments: ['10', '11', '12']
 }]
 
-var comments = [{
+const comments = [{
   id: '1',
   body: 'Now, I understand how GraphQL works',
   user: '4'
@@ -112,8 +112,10 @@ var comments = [{
   user: '3'
 }]
 
-export {
+const db = {
   users,
   posts,
   comments
 };
+
+export { db as default }
