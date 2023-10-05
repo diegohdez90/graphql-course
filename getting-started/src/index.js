@@ -310,18 +310,18 @@ const resolvers = {
       }
 
       const [userDeleted] = users.splice(index, 1);
-      posts = posts.map(post => {
-        post = post.comments.filter(comment => comment !== id)
-        return post;
-      });
-      /**posts = posts.filter(post => {
+      // posts = posts.map(post => {
+      //   post = post.comments.filter(comment => comment !== id)
+      //   return post;
+      // });
+      posts = posts.filter(post => {
         const matched = post.author === id
         if (matched) {
           comments.filter(comment => comment.post !== post.id)
         }
         return !matched
       });
-      comments = comments.filter(comment => comment.user !== id);*/
+      comments = comments.filter(comment => comment.user !== id);
 
       return userDeleted;
     },
