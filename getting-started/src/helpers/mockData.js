@@ -1,4 +1,4 @@
-const users = [{
+var users = [{
   id: '1',
   name: 'Diego',
   email: 'diegohdez12@gmail.com'
@@ -32,7 +32,7 @@ const users = [{
   email: 'mario@gmail.com'
 }];
 
-const posts = [{
+var posts = [{
   id: '1',
   title: 'Getting Stated with GraphQL',
   body: 'This is a sample tutorial in how to develop application with...',
@@ -53,9 +53,16 @@ const posts = [{
   published: true,
   author: '3',
   comments: ['4','5','7']
+}, {
+  id: '4',
+  title: 'Python',
+  body: 'Learn this OOP language...',
+  published: true,
+  author: '3',
+  comments: ['10', '11', '12']
 }]
 
-const comments = [{
+var comments = [{
   id: '1',
   body: 'Now, I understand how GraphQL works',
   user: '4'
@@ -91,6 +98,18 @@ const comments = [{
   id: '9',
   body: 'I will share this with my colleagues',
   user: '7'
+}, {
+  id: '10',
+  body: 'Interested',
+  user: '1'
+}, {
+  id: '11',
+  body: 'I undestood from the beginning',
+  user: '2'
+}, {
+  id: '12',
+  body: 'Excellent tutorial',
+  user: '3'
 }]
 
 export {

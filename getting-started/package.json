@@ -11,15 +11,16 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@babel/cli": "^7.22.15",
-    "@babel/core": "^7.22.17",
-    "@babel/node": "^7.22.15",
-    "@babel/preset-env": "^7.22.15",
+    "@babel/cli": "^7.23.0",
+    "@babel/core": "^7.23.0",
+    "@babel/node": "^7.22.19",
+    "@babel/preset-env": "^7.22.20",
+    "babel-plugin-transform-remove-strict-mode": "^0.0.2",
     "nodemon": "^3.0.1"
   },
   "dependencies": {
-    "graphql": "^16.8.0",
-    "graphql-yoga": "^4.0.4",
+    "graphql": "^16.8.1",
+    "graphql-yoga": "^4.0.5",
     "uuid": "^9.0.1"
   }
 }
