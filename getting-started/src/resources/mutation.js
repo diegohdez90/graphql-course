@@ -73,6 +73,26 @@ const mutation = {
 
     return userDeleted;
   },
+  updatePost(parent, args, {db}, info) {
+    const { input, id } = args;
+    const post = db.posts.find(post => post.id === id);
+    if (!post) {
+      throw new Error('Post not found');
+    }
+    if (typeof input.title === 'string') {
+      post.title = input.title;
+    }
+
+    if (typeof input.body === 'string') {
+      post.body = input.body;
+    }
+
+    if (typeof input.published === 'boolean') {
+      post.published = input.published;
+    }
+
+    return post;
+  },
   deletePost(parent, args, { db }, info) {
     const { id } = args;
     const indexPost = db.posts.findIndex(post => post.id === id);
@@ -133,6 +153,17 @@ const mutation = {
     const index = db.users.findIndex(user => user.id === id)
     db.users[index] = user
     return user;
+  },
+  updateComment(parent, args, { db }, info) {
+    const { id, input } = args;
+    const comment = db.comments.find(comment => comment.id === id);
+    if (!comment) {
+      throw new Error('Comment not found');
+    }
+    if(typeof input.body === 'string') {
+      comment.body = input.body;
+    }
+    return comment;
   }
 };
 
