@@ -110,6 +110,29 @@ const mutation = {
     }
 
     return commentDeleted;
+  },
+  updateUser(parent, args, { db }, info) {
+    const { id, data } = args;
+    const user = db.users.find(user => user.id === id)
+    if (!user) {
+      throw new Error('Unable to find user');
+    }
+    if (typeof data.email === 'string') {
+      const taken = db.users.some(user => data.email === user.email)
+      if (taken) {
+        throw new Error('Unable to use this email')
+      }
+      user.email = data.email
+    }
+
+    if (typeof data.name === 'string') user.name = data.name;
+    if (typeof data.age !== 'undefined') {
+      user.age = data.age
+    }
+
+    const index = db.users.findIndex(user => user.id === id)
+    db.users[index] = user
+    return user;
   }
 };
 

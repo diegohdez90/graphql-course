@@ -3,29 +3,29 @@ import { createYoga, createSchema } from 'graphql-yoga';
 import { loadFiles } from '@graphql-tools/load-files';
 import db from './helpers/mockData';
 
-import query from './resources/query';
-import mutation from './resources/mutation';
-import user from './resources/user';
-import post from './resources/post';
-import comment from './resources/comment';
+import Query from './resources/query';
+import Mutation from './resources/mutation';
+import User from './resources/user';
+import Post from './resources/post';
+import Comment from './resources/comment';
 
-async function main(params) {
+async function main() {
   const schema = createSchema({
     typeDefs: await loadFiles('src/schema.graphql'),
     resolvers: {
-      Query: query,
-      Mutation: mutation,
-      User: user,
-      Comment: comment,
-      Post: post
+      Query,
+      Mutation,
+      Post,
+      User,
+      Comment
     },
-    context: {
-      db
-    }
   });
   const server = createServer(
     createYoga({
-      schema: schema
+      schema: schema,
+      context: {
+        db: db
+      },
     })
   )
   
