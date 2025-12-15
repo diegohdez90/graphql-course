@@ -1,4 +1,6 @@
 const graphiql = require('graphql')
+const Company = require('./company')
+const { default: axios } = require('axios')
 
 const {
 	GraphQLObjectType,
@@ -19,7 +21,13 @@ const User = new GraphQLObjectType({
 			type: GraphQLInt
 		},
 		companyId: {
-			type: GraphQLString
+			type: Company,
+			resolve(parentValue, args) {
+				return axios
+					.get(`http://localhost:3000/companies/${parentValue.companyId}`)
+					.then(res => res.data)
+				
+			}
 		}
 	}
 })
